@@ -69,9 +69,6 @@ jobs:
             cp icon.png ${PKG_DIR}/var/www/mos-plugins/dvb-drivers/
           fi
 
-          # Copy default settings.json
-          cp settings.json ${PKG_DIR}/var/www/mos-plugins/dvb-drivers/
-
           # Create DEBIAN control file
           cat > ${PKG_DIR}/DEBIAN/control << EOF
           Package: dvb-drivers
