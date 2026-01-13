@@ -1,21 +1,181 @@
 #!/bin/bash
 
+# Import MOS functions
+. /usr/local/lib/functions/mos-common
+
+# Set HEADER if GitHub Token is specified
+GH_TOKEN=$(jq -r '.github // empty' /boot/config/system/tokens.json)
+if [ ! -z "$GH_TOKEN" ] ; then
+  TOKEN="$(decrypt_password "$GH_TOKEN" "tokens")"
+  HEADER=(--header "Authorization: Bearer $TOKEN")
+else
+  HEADER=()
+fi
+
+# Set variables for plugin
+PLG_NAME="dvb-drivers"
+DISPLAY_NAME="DVB Drivers"
+PLG_DIR="/boot/optional/plugins/$PLG_NAME"
+DRV_TMP_DIR="/var/mos/mos-plugins"
+DRV_PLG_DIR="/boot/optional/drivers/$PLG_NAME"
+
+# Asset download function with md5 check
+download_asset() {
+  mkdir -p $DRV_DIR
+  curl --progress-bar -L \
+    "${HEADER[@]}" \
+    --header "Accept: application/octet-stream" \
+    --header "X-GitHub-Api-Version: 2022-11-28" \
+    --output "$DRV_DIR/$1" \
+    "https://api.github.com/repos/ich777/mos-addon-drivers/releases/assets/$2"
+
+  if [[ "$1" == *.md5 ]]; then
+    if [ "$(md5sum $DRV_DIR/${1%.*} | awk '{print $1}')" != "$(cat $DRV_DIR/$1 | awk '{print $1}')" ] ; then
+      return 1
+    else
+      return 0
+    fi
+  fi
+}
+
+# Download driver json from mos-addon-drivers
+download_driver_json() {
+  mkdir -p /var/mos/mos-drivers
+  curl -s --request GET \
+    --url "https://api.github.com/repos/ich777/mos-addon-drivers/releases/tags/$1" \
+    "${HEADER[@]}" \
+    --header "X-GitHub-Api-Version: 2022-11-28" \
+    -o /var/mos/mos-drivers/drivers-$1.json
+  EXIT_STATUS=$?
+  if [ "$EXIT_STATUS" != "0" ] ; then
+    exit 1
+  fi
+}
+
+# Check if driver json from mos-addon-drivers is in place and if it's younger than five minutes
+get_releases() {
+  if [ ! -f /var/mos/mos-drivers/drivers-$1.json ] ; then
+    download_driver_json "$1"
+  else
+    CURENTTIME=$(date +%s)
+    FILETIME=$(stat /var/mos/mos-drivers/drivers-$UNAME.json -c %Y)
+    DIFF=$(expr $CURENTTIME - $FILETIME)
+    CHK_TIMEOUT=300
+    if [ $DIFF -gt $CHK_TIMEOUT ] ; then
+      rm -f /var/mos/mos-drivers/drivers-$UNAME.json
+      download_driver_json "$1"
+    fi
+  fi
+}
+
+# Check for old Kernel directories in plugin driver directory
+check_old_kernel_directories() {
+  rm -rf $(ls -d $DRV_PLG_DIR/* 2>/dev/null | grep -v "$1")
+}
+
+# Check for wrong driver packages in driver directory
+check_old_drivers() {
+  rm -rf $(ls -d $DRV_DIR/* 2>/dev/null | grep -v "$1")
+}
+
+# Install driver function
+install_driver() {
+  DEBIAN_FRONTEND=noninteractive dpkg -i $DRV_DIR/*.deb >/dev/null 2>&1
+  depmod --quick
+  udevadm settle --timeout=15
+}
+
+# Check if driver is locally available for running Kernel and install them
+check_deb() {
+  if ! ls -d $DRV_DIR/*.deb | grep -q "$1" ; then
+    return 1
+  else
+    return 0
+  fi
+}
+
+################################################
+# END OF DRIVER SPECIFIC PLUGIN BASE FUNCTIONS #
+################################################
+
+# Download function
+driver_download() {
+  # Set kernel version
+  if [ -z "$1" ] ; then
+    UNAME="$(uname -r)"
+  else
+    UNAME="$1"
+  fi
+  # Get driver settings and selected package
+  SETTINGS_JSON="$(cat $PLG_DIR/settings.json 2>/dev/null)"
+  DRIVER_PKG="$(echo $SETTINGS_JSON | jq -r '.driver')"
+  DRV_DIR="$DRV_PLG_DIR/$UNAME"
+
+  # Check for old Kernel directories
+  if [ -z "$1" ] ; then
+    check_old_kernel_directories "$UNAME"
+  fi
+
+  # Check for old driver versions
+  check_old_drivers "$DRIVER_PKG"
+
+  # Get driver releases if not already downloaded
+  get_releases "$UNAME"
+
+  # Get driver names and assets from .deb and .md5
+  DRV_NAME=$(cat /var/mos/mos-drivers/drivers-${UNAME}.json | jq --arg driver_pkg "dvb-$DRIVER_PKG" -r '.assets[] | select(.name | startswith($driver_pkg) and endswith(".deb")) | .name')
+  DRV_ASSET=$(cat /var/mos/mos-drivers/drivers-${UNAME}.json | jq --arg driver_pkg "dvb-$DRIVER_PKG" -r '.assets[] | select(.name | startswith($driver_pkg) and endswith(".deb")) | .id')
+  DRV_NAME_MD5=$(cat /var/mos/mos-drivers/drivers-${UNAME}.json | jq --arg driver_pkg "dvb-$DRIVER_PKG" -r '.assets[] | select(.name | startswith($driver_pkg) and endswith(".deb.md5")) | .name')
+  DRV_ASSET_MD5=$(cat /var/mos/mos-drivers/drivers-${UNAME}.json | jq --arg driver_pkg "dvb-$DRIVER_PKG" -r '.assets[] | select(.name | startswith($driver_pkg) and endswith(".deb.md5")) | .id')
+
+  # Download asset and notify user
+  notify -t "Plugin" -m "Downloading DVB package $DRIVER_PKG" -p "normal"
+  download_asset "$DRV_NAME" "$DRV_ASSET"
+  download_asset "$DRV_NAME_MD5" "$DRV_ASSET_MD5"
+  EXIT_STATUS=$?
+  if [ "$EXIT_STATUS" != "0" ] ; then
+    rm -rf $DRV_DIR
+    notify -t "Plugin" -m "DVB package $DRIVER_PKG download failed" "alert"
+    exit 1
+  else
+    notify -t "Plugin" -m "DVB package $DRIVER_PKG download successful" "normal"
+  fi
+}
+
 install() {
-  echo "install"
+  driver_download
+  install-driver
 }
 
 uninstall() {
-  echo "uninstall"
+  :
 }
 
 mos-start() {
-  echo "mos-start"
+  # Get driver settings and selected package
+  UNAME="$(uname -r)"
+  SETTINGS_JSON="$(cat $PLG_DIR/settings.json 2>/dev/null)"
+  DRIVER_PKG="$(echo $SETTINGS_JSON | jq -r '.driver')"
+  DRV_DIR="$DRV_PLG_DIR/$UNAME"
+
+  # Execute functions
+  check_old_kernel_directories "$UNAME"
+  check_old_drivers "$DRIVER_PKG"
+  check_deb "$DRIVER_PKG"
+  EXIT_STATUS=$?
+  if [ "$EXIT_STATUS" != "0" ] ; then
+    driver_download
+    install-driver
+  else
+    install-driver
+  fi
 }
 
 plugin-update() {
-  echo "plugin update"
+  :
 }
 
 mos-osupdate() {
-  echo "os update"
+  driver_download "$1"
 }
+
