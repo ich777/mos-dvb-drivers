@@ -54,7 +54,7 @@ jobs:
 
           # Create directory structure
           mkdir -p ${PKG_DIR}/usr/bin/plugins
-          mkdir -p ${PKG_DIR}/var/www/plugins/dvb-drivers
+          mkdir -p ${PKG_DIR}/var/www/mos-plugins/dvb-drivers
           mkdir -p ${PKG_DIR}/DEBIAN
 
           # Copy get_dvb_devices script
@@ -62,15 +62,15 @@ jobs:
           chmod +x ${PKG_DIR}/usr/bin/plugins/get_dvb_devices
 
           # Copy Vue plugin
-          cp -R page/dist/dvb-drivers/* ${PKG_DIR}/var/www/plugins/dvb-drivers/
+          cp -R page/dist/dvb-drivers/* ${PKG_DIR}/var/www/mos-plugins/dvb-drivers/
 
           # Copy icon
           if [ -f icon.png ]; then
-            cp icon.png ${PKG_DIR}/var/www/plugins/dvb-drivers/
+            cp icon.png ${PKG_DIR}/var/www/mos-plugins/dvb-drivers/
           fi
 
           # Copy default settings.json
-          cp settings.json ${PKG_DIR}/var/www/plugins/dvb-drivers/
+          cp settings.json ${PKG_DIR}/var/www/mos-plugins/dvb-drivers/
 
           # Create DEBIAN control file
           cat > ${PKG_DIR}/DEBIAN/control << EOF
