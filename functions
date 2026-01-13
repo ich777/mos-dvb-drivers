@@ -144,7 +144,7 @@ driver_download() {
 
 install() {
   driver_download
-  install-driver
+  install_driver
 }
 
 uninstall() {
@@ -167,7 +167,7 @@ mos-start() {
     driver_download
     install-driver
   else
-    install-driver
+    install_driver
   fi
 }
 
