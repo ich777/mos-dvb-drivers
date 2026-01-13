@@ -1,16 +1,16 @@
 #!/bin/bash
 
 # Construct DVB json
-for device_path in /sys/class/dvb/dvb*.frontend*; do
+for device_path in /sys/class/dvb/dvb*.frontend* ; do
   if [ -d "$device_path" ] ; then
     DEVICE=$(basename "$device_path")
     ADAPTER=$(echo "$DEVICE" | grep -oP 'dvb\d+')
 
     MODULE_PATH="${device_path}/device/driver/module"
-    if [ -e "$MODULE_PATH" ]; then
+    if [ -e "$MODULE_PATH" ] ; then
       MODULE=$(basename $(readlink "$MODULE_PATH"))
       VERSION="/sys/module/${MODULE}/version"
-      if [ -f "$VERSION" ]; then
+      if [ -f "$VERSION" ] ; then
         VERSION=$(cat "$VERSION")
       else
         VERSION="unknown"
