@@ -82,6 +82,7 @@ check_old_drivers() {
 install_driver() {
   DEBIAN_FRONTEND=noninteractive dpkg -i $DRV_DIR/*.deb >/dev/null 2>&1
   depmod --quick
+  udevadm trigger
   udevadm settle --timeout=15
 }
 
