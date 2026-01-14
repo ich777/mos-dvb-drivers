@@ -81,14 +81,14 @@ check_old_drivers() {
 # Install driver function
 install_driver() {
   DEBIAN_FRONTEND=noninteractive dpkg -i $DRV_DIR/*.deb >/dev/null 2>&1
-  depmod --quick
+  depmod --all
   udevadm trigger
   udevadm settle --timeout=15
 }
 
 # Check if driver is locally available for running Kernel and install them
 check_deb() {
-  if ! ls -d $DRV_DIR/*.deb | grep -q "$1" ; then
+  if ! ls -d $DRV_DIR/*.deb 2>/dev/null | grep -q "$1" ; then
     return 1
   else
     return 0
@@ -155,14 +155,17 @@ mos-start() {
   DRIVER_PKG="$(echo $SETTINGS_JSON | jq -r '.driver')"
   DRV_DIR="$DRV_PLG_DIR/$UNAME"
 
-  # Execute functions
-  check_deb "$DRIVER_PKG"
-  EXIT_STATUS=$?
-  if [ "$EXIT_STATUS" != "0" ] ; then
-    driver_download
-    install-driver
-  else
-    install_driver
+  # Check if driver needs to be installed
+  if ! dpkg -l | grep -qE "digital-devices|libreelec" ; then
+    # Execute functions
+    check_deb "$DRIVER_PKG"
+    EXIT_STATUS=$?
+    if [ "$EXIT_STATUS" != "0" ] ; then
+      driver_download
+      install_driver
+    else
+      install_driver
+    fi
   fi
 }
 
