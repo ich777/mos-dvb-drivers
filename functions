@@ -147,10 +147,6 @@ install() {
   install_driver
 }
 
-uninstall() {
-  :
-}
-
 mos-start() {
   # Get driver settings and selected package
   UNAME="$(uname -r)"
@@ -159,8 +155,6 @@ mos-start() {
   DRV_DIR="$DRV_PLG_DIR/$UNAME"
 
   # Execute functions
-  check_old_kernel_directories "$UNAME"
-  check_old_drivers "$DRIVER_PKG"
   check_deb "$DRIVER_PKG"
   EXIT_STATUS=$?
   if [ "$EXIT_STATUS" != "0" ] ; then
@@ -171,11 +165,6 @@ mos-start() {
   fi
 }
 
-plugin-update() {
-  :
-}
-
 mos-osupdate() {
   driver_download "$1"
 }
-
