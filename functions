@@ -129,6 +129,12 @@ driver_download() {
   DRV_NAME_MD5=$(cat /var/mos/mos-drivers/drivers-${UNAME}.json | jq --arg driver_pkg "dvb-$DRIVER_PKG" -r '.assets[] | select(.name | startswith($driver_pkg) and endswith(".deb.md5")) | .name')
   DRV_ASSET_MD5=$(cat /var/mos/mos-drivers/drivers-${UNAME}.json | jq --arg driver_pkg "dvb-$DRIVER_PKG" -r '.assets[] | select(.name | startswith($driver_pkg) and endswith(".deb.md5")) | .id')
 
+  # Safety Check
+  if [ -z "$DRV_NAME" ] ; then
+    notify -t "Plugin" -m "Can't get driver for $DRIVER_PKG" "alert"
+    exit 1
+  fi
+
   # Download asset and notify user
   notify -t "Plugin" -m "Downloading DVB package $DRIVER_PKG" -p "normal"
   download_asset "$DRV_NAME" "$DRV_ASSET"
