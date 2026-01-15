@@ -242,7 +242,7 @@ To allow the workflow to create releases:
      Open Repository Settings
      Go to Actions → General
      Under Workflow permissions, select:
-        ✅ Read and write permissions
+     Read and write permissions
      Click Save
 
 **This step is required, otherwise the workflow will fail.**
