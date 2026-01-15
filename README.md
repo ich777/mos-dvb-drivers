@@ -18,6 +18,11 @@ Currently available driver packages include:
 - **LibreELEC**
 - **Digital Devices**
 
+### Driver Sources
+
+- LibreELEC: [https://github.com/LibreELEC/dvb-firmware](https://github.com/LibreELEC/dvb-firmware)
+- Digital Devices: [https://github.com/DigitalDevices/dddvb](https://github.com/DigitalDevices/dddvb)
+
 No driver binaries are included in this repository.
 
 ---
