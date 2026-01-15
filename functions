@@ -4,7 +4,7 @@
 . /usr/local/lib/functions/mos-common
 
 # Set HEADER if GitHub Token is specified
-GH_TOKEN=$(jq -r '.github // empty' /boot/config/system/tokens.json)
+GH_TOKEN=$(jq -r '.github // empty' /boot/config/system/tokens.json 2>/dev/null)
 if [ ! -z "$GH_TOKEN" ] ; then
   TOKEN="$(decrypt_password "$GH_TOKEN" "tokens")"
   HEADER=(--header "Authorization: Bearer $TOKEN")
