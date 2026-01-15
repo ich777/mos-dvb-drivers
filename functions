@@ -154,7 +154,7 @@ install() {
   install_driver
 }
 
-mos-start() {
+mos_start() {
   # Get driver settings and selected package
   UNAME="$(uname -r)"
   SETTINGS_JSON="$(cat $PLG_DIR/settings.json 2>/dev/null)"
@@ -175,6 +175,6 @@ mos-start() {
   fi
 }
 
-mos-osupdate() {
+mos_osupdate() {
   driver_download "$1"
 }
