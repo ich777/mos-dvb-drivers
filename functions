@@ -80,7 +80,8 @@ check_old_drivers() {
 
 # Install driver function
 install_driver() {
-  DEBIAN_FRONTEND=noninteractive dpkg -i $DRV_DIR/*.deb >/dev/null 2>&1
+  DRIVER_DEB=$(ls -1 $DRV_DIR/*.deb | sort -V | tail -1)
+  DEBIAN_FRONTEND=noninteractive dpkg -i "$DRIVER_DEB" >/dev/null 2>&1
   depmod --all
   udevadm trigger
   udevadm settle --timeout=15
@@ -160,6 +161,9 @@ mos_start() {
   SETTINGS_JSON="$(cat $PLG_DIR/settings.json 2>/dev/null)"
   DRIVER_PKG="$(echo $SETTINGS_JSON | jq -r '.driver')"
   DRV_DIR="$DRV_PLG_DIR/$UNAME"
+
+  # Check for old Kernel versions
+  check_old_kernel_directories "$UNAME"
 
   # Check if driver needs to be installed
   if ! dpkg -l | grep -qE "digital-devices|libreelec" ; then
