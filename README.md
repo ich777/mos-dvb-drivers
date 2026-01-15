@@ -8,12 +8,27 @@ mos-dvb-drivers provides a **MOS plugin** for managing DVB drivers.
 
 This repository contains the **MOS plugin implementation**, optional helper
 functions, and configuration files (such as `settings.json`) required to
-integrate DVB drivers management into MOS.
+integrate DVB driver management into MOS.
 
 The plugin enables MOS to download and install DVB drivers on demand directly
-on the system
+onto the system.
+
+Currently available driver packages include:
+
+- **LibreELEC**
+- **Digital Devices**
 
 No driver binaries are included in this repository.
+
+---
+
+## Build & Automation
+
+This repository includes a **GitHub Actions workflow** used to build and package
+the plugin for MOS.
+
+The build process is fully automated and produces artifacts that can be consumed
+by the MOS Hub or MOS release tooling.
 
 ---
 
