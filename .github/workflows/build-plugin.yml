@@ -71,7 +71,7 @@ jobs:
 
           # Create DEBIAN control file
           cat > ${PKG_DIR}/DEBIAN/control << EOF
-          Package: dvb-drivers
+          Package: dvb-drivers-plugin
           Version: ${VERSION}-1+mos-plugin
           Architecture: amd64
           Maintainer: admin@minenet.at
