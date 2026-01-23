@@ -87,7 +87,7 @@
       </v-card>
 
       <v-card v-if="driverInfo && driverInfo.package" class="mb-4 pa-0">
-        <v-card-title>Installed Package</v-card-title>
+        <v-card-title>Locally Available Driver Package</v-card-title>
         <v-card-text class="pa-4">
           <v-row dense>
             <v-col cols="6" md="3">
