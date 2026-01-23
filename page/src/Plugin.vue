@@ -39,12 +39,12 @@
                 <span>
                   DigitalDevices
                   <v-chip
-                    v-if="installedDriver === 'digital-devices'"
+                    v-if="settings.driver === 'digital-devices'"
                     size="x-small"
                     color="success"
                     class="ml-2"
                   >
-                    installed
+                    selected
                   </v-chip>
                 </span>
               </template>
@@ -54,12 +54,12 @@
                 <span>
                   LibreELEC
                   <v-chip
-                    v-if="installedDriver === 'libreelec'"
+                    v-if="settings.driver === 'libreelec'"
                     size="x-small"
                     color="success"
                     class="ml-2"
                   >
-                    installed
+                    selected
                   </v-chip>
                 </span>
               </template>
