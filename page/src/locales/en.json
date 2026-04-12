@@ -1,0 +1,20 @@
+{
+  "plugin_dvb_drivers": {
+    "title": "DVB Drivers",
+    "description": "DVB Driver management",
+    "driver_information": "Driver Information",
+    "no_adapters": "No Adapters found",
+    "adapter": "Adapter",
+    "driver_selection": "Driver Selection",
+    "selected": "selected",
+    "update": "Update",
+    "download": "Download",
+    "local_driver_package": "Locally Available Driver Package",
+    "plugin": "Plugin",
+    "kernel": "Kernel",
+    "package": "Package",
+    "unknown": "Unknown",
+    "path": "Path",
+    "module": "Module"
+  }
+}

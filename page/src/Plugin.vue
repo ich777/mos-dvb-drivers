@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h2 class="mb-4">DVB Drivers</h2>
+    <h2 class="mb-4">{{ $t('plugin_dvb_drivers.title') }}</h2>
     <v-skeleton-loader v-if="loading" :loading="true" type="card, card" />
     <div v-else style="margin-bottom: 80px">
       <v-card class="mb-4 pa-0">
-        <v-card-title>Driver Information</v-card-title>
+        <v-card-title>{{ $t('plugin_dvb_drivers.driver_information') }}</v-card-title>
         <v-card-text class="pa-4">
           <div v-if="Object.keys(dvbDevices).length === 0" class="text-center text-grey py-4">
-            No Adapters found
+            {{ $t('plugin_dvb_drivers.no_adapters') }}
           </div>
           <v-list v-else density="compact" class="pa-0">
             <v-list-item
@@ -16,14 +16,14 @@
               class="px-0"
             >
               <v-list-item-title>
-                <span class="font-weight-medium">Adapter {{ index + 1 }}:</span>
+                <span class="font-weight-medium">{{ $t('plugin_dvb_drivers.adapter') }} {{ index + 1 }}:</span>
                 <span class="text-medium-emphasis ml-2">/dev/{{ deviceName }}</span>
                 <span class="mx-2">|</span>
                 <span v-if="device.module && device.module !== 'unknown'" class="font-weight-medium">
                   {{ device.module }}
                   <span v-if="device.version" class="text-medium-emphasis">v{{ device.version }}</span>
                 </span>
-                <span v-else class="text-medium-emphasis">Unknown</span>
+                <span v-else class="text-medium-emphasis">{{ $t('plugin_dvb_drivers.unknown') }}</span>
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -31,7 +31,7 @@
       </v-card>
 
       <v-card class="mb-4 pa-0">
-        <v-card-title>Driver Selection</v-card-title>
+        <v-card-title>{{ $t('plugin_dvb_drivers.driver_selection') }}</v-card-title>
         <v-card-text class="pa-4">
           <v-radio-group v-model="selectedDriver" hide-details class="mt-0">
             <v-radio value="digital-devices">
@@ -44,7 +44,7 @@
                     color="success"
                     class="ml-2"
                   >
-                    selected
+                    {{ $t('plugin_dvb_drivers.selected') }}
                   </v-chip>
                 </span>
               </template>
@@ -59,7 +59,7 @@
                     color="success"
                     class="ml-2"
                   >
-                    selected
+                    {{ $t('plugin_dvb_drivers.selected') }}
                   </v-chip>
                 </span>
               </template>
@@ -74,32 +74,32 @@
             :loading="saving"
             @click="saveSettings"
           >
-            Update
+            {{ $t('plugin_dvb_drivers.update') }}
           </v-btn>
           <v-btn
             color="onPrimary"
             :loading="downloading"
             @click="downloadDriver"
           >
-            Download
+            {{ $t('plugin_dvb_drivers.download') }}
           </v-btn>
         </v-card-actions>
       </v-card>
 
       <v-card v-if="driverInfo && driverInfo.package" class="mb-4 pa-0">
-        <v-card-title>Locally Available Driver Package</v-card-title>
+        <v-card-title>{{ $t('plugin_dvb_drivers.local_driver_package') }}</v-card-title>
         <v-card-text class="pa-4">
           <v-row dense>
             <v-col cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Plugin</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_dvb_drivers.plugin') }}</strong></div>
               <div class="text-body-2">{{ driverInfo.plugin || '-' }}</div>
             </v-col>
             <v-col cols="6" md="3">
-              <div class="text-caption text-medium-emphasis"><strong>Kernel</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_dvb_drivers.kernel') }}</strong></div>
               <div class="text-body-2">{{ driverInfo.kernel || '-' }}</div>
             </v-col>
             <v-col cols="12" md="6">
-              <div class="text-caption text-medium-emphasis"><strong>Package</strong></div>
+              <div class="text-caption text-medium-emphasis"><strong>{{ $t('plugin_dvb_drivers.package') }}</strong></div>
               <div class="text-body-2" style="word-break: break-all">{{ driverInfo.package || '-' }}</div>
             </v-col>
           </v-row>

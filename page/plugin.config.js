@@ -6,4 +6,5 @@ export default {
   icon: '',
   author: 'ich777',
   homepage: 'https://en.wikipedia.org/wiki/Digital_terrestrial_television',
+  widget: true,
 };
