@@ -64,6 +64,21 @@
                 </span>
               </template>
             </v-radio>
+            <v-radio value="tbs">
+              <template #label>
+                <span>
+                  TBS
+                  <v-chip
+                    v-if="settings.driver === 'tbs'"
+                    size="x-small"
+                    color="success"
+                    class="ml-2"
+                  >
+                    {{ $t('plugin_dvb_drivers.selected') }}
+                  </v-chip>
+                </span>
+              </template>
+            </v-radio>
           </v-radio-group>
         </v-card-text>
         <v-divider />
@@ -130,6 +145,9 @@ const installedDriver = computed(() => {
   }
   if (plugin.includes('libreelec')) {
     return 'libreelec';
+  }
+  if (plugin.includes('tbs')) {
+    return 'tbs';
   }
   return null;
 });
