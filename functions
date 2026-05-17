@@ -166,7 +166,7 @@ mos_start() {
   check_old_kernel_directories "$UNAME"
 
   # Check if driver needs to be installed
-  if ! dpkg -l | grep -qE "digital-devices|libreelec" ; then
+  if ! dpkg -l | grep -qE "digital-devices|libreelec|tbs" ; then
     # Execute functions
     check_deb "$DRIVER_PKG"
     EXIT_STATUS=$?
